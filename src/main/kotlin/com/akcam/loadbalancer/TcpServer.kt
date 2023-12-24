@@ -29,9 +29,9 @@ class TcpServer(private val configuration: LoadBalancerConfiguration) {
         val backend = configuration.backends[counter.getAndIncrement() % configuration.backends.size]
         logger.info("$backend is selected for request from ${incomingConnection.inetAddress}")
 
-        val outgoing = Socket(backend.ip, backend.port.toInt())
-        thread { incomingConnection.getInputStream().transferTo(outgoing.getOutputStream()) }
-        thread { outgoing.getInputStream().transferTo(incomingConnection.getOutputStream()) }
+        val outgoingConnection = Socket(backend.ip, backend.port.toInt())
+        thread { incomingConnection.getInputStream().transferTo(outgoingConnection.getOutputStream()) }
+        thread { outgoingConnection.getInputStream().transferTo(incomingConnection.getOutputStream()) }
     }
 
     companion object {
